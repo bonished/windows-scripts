@@ -1,6 +1,4 @@
-$keylocal = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform"
-$key = (Get-ItemProperty -Path $keylocal -Name BackupProductKeyDefault).BackupProductKeyDefault
-cls
+$key = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SoftwareProtectionPlatform" -Name BackupProductKeyDefault).BackupProductKeyDefault
 Write-Host "Windows serial key is:" -NoNewline $key
 Write-Host
 Read-Host "Press enter to continue..."

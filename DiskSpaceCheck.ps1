@@ -1,4 +1,4 @@
-#Simple OS disk space check script - before using, edit your target list .txt file path!
+#Simple OS disk space check PowerShell script - before using, edit your target list .txt file path!
 #You can simply change script to check any other disk by renaming Where-Object value with desired partition or check all disks by commenting whole line.
 
 Get-CimInstance -Class Win32_LogicalDisk -ComputerName (Get-Content -Path 'C:\Windows\Temp\targets.txt') |

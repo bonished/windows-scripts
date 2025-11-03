@@ -2,14 +2,15 @@
 param ()
 
 # Title
-Write-Output "===== KB Check for Windows Server 2012, 2016 and 2019 ====="
+Write-Output "===== KB Check for Windows Server 2012, 2016, 2019 and 2022 ====="
 
 # Read the server names from a text file
 $TextFile = Get-Content -Path "$PSScriptRoot\servers.txt"
 
 # Define the KBs to check for different operating systems
-$W2k19KBs = @("KB5026362")
-$W2k16KBs = @("KB5033373")
+$W2k22KBs = @("KB5066782")
+$W2k19KBs = @("KB5066586")
+$W2k16KBs = @("KB5066836")
 $W2k12KBs = @("KB5018474")
 
 # Check if Verbose mode is enabled
@@ -42,6 +43,7 @@ if ($confirmInput -in @('n', 'no')) {
     $enterKbNumbers = Read-Host "Do you want to enter the KB numbers now? (Yes/No)"
 
     if ($enterKbNumbers -in @('y', 'yes')) {
+        $W2k22KBs = Read-Host "Enter the KB number for Windows Server 2022:"
         $W2k19KBs = Read-Host "Enter the KB number for Windows Server 2019:"
         $W2k16KBs = Read-Host "Enter the KB number for Windows Server 2016:"
         $W2k12KBs = Read-Host "Enter the KB number for Windows Server 2012:"
@@ -53,7 +55,7 @@ if ($confirmInput -in @('n', 'no')) {
     }
 }
 Clear-Host
-Write-Output "===== KB Check for Windows Server 2012, 2016 and 2019 ====="
+Write-Output "===== KB Check for Windows Server 2012, 2016, 2019 and 2022 ====="
 Write-Output "KB numbers set, starting check. There are $lineCount servers to process."
 
 # Initialize an array to store the output objects
@@ -83,7 +85,10 @@ $output = foreach ($ServerName in $TextFile) {
             $hotfixes = "No KBs to check"
 
             # Check the operating system version and retrieve corresponding hotfixes
-            if ($operatingSystem.Name -like "*2019*") {
+	 if ($operatingSystem.Name -like "*2022*") {
+	     $hotfixes = Get-HotFix -Id $using:W2k22KBs -ErrorAction SilentlyContinue
+	}
+            elseif ($operatingSystem.Name -like "*2019*") {
                 $hotfixes = Get-HotFix -Id $using:W2k19KBs -ErrorAction SilentlyContinue
             }
             elseif ($operatingSystem.Name -like "*2016*") {
@@ -172,6 +177,22 @@ while ($generateReport -notin @('y', 'n', 'yes', 'no')) {
 if ($generateReport -in @('y', 'yes')) {
     # Open the output in Out-GridView for easy viewing
     $output | Out-GridView
+}
+
+# Prompt the user if they want to save the output in a text file
+$saveToFile = ''
+while ($saveToFile -notin @('y', 'n', 'yes', 'no')) {
+    $saveToFile = Read-Host "Do you want to save the output in a text file? (Yes/No)"
+
+    if ($saveToFile -notin @('y', 'n', 'yes', 'no')) {
+        Write-Host "Invalid input. Please enter 'y' or 'n'."
+    }
+}
+
+if ($saveToFile -in @('y', 'yes')) {
+    $fileName = Join-Path -Path $PSScriptRoot -ChildPath "KB_Check_Report.txt"
+    $output | Export-Csv -Path $fileName -NoTypeInformation
+    Write-Host "Output saved to: $fileName"
 }
 
 # Prompt the user to press a key before exiting

@@ -1,30 +1,5 @@
 <#
 .SYNOPSIS
-  Map OS disk numbers to VMware SCSI and LUN locations, with additional labels, disk sizes and full path.
-
-.DESCRIPTION
-  This script enumerates all disks visible to the operating system,
-  retrieves their corresponding SCSI controller and target/LUN values
-  from VMware via WMI, and collects partition names, sizes, and mountpoints.
-  It produces a formatted table linking OS disk numbers with VMware SCSI
-  locations, partition labels, disk sizes in GB, and access paths.
-  Useful for mapping OS disks to the underlying VMware storage.
-
-.INPUTS
-  None required; script queries local system disks and WMI information.
-
-.OUTPUTS
-  A formatted table with the following columns:
-    - Disk Number      : Number value of disk in OS
-    - VMware SCSI      : SCSI controller and target/LUN in VMware
-    - Partition Name   : Label(s) of partitions on the disk
-    - Disk Size GB     : Disk size rounded to GB
-    - Location        : OS mountpoints (e.g., C:\, D:\)
-
-.NOTES
-
-<#
-.SYNOPSIS
   Map OS disk numbers to VMware SCSI and LUN locations, with additional info - labels, disk sizes and full path.
 
 .DESCRIPTION
@@ -85,3 +60,4 @@ Get-Disk | ? { $_.Number -ne $null } | Sort-Object Number | % {
                              Sort-Object -Unique) -join ', ' # Direct partition location
     }
 } | Format-Table -AutoSize
+
